@@ -116,7 +116,39 @@ class HomeViewState extends State<HomeView> {
                       //attach them to _stockList,
                       //then print all stocks to the console and,
                       //finally call setstate at the end.
-                      
+                      var companyData =
+                          await _stockService.getCompanyInfo(symbol);
+                      if (companyData != null) {
+                        // Add checking for API rate limit
+                        if (companyData['Information'] != null) {
+                          print('API rate limit exceeded.');
+                        } else {
+                          symbol = companyData['Symbol'];
+                          companyName = companyData['Name'];
+                        }
+                      }
+
+                      var stockData = await _stockService.getQuote(symbol);
+                      if (stockData != null) {
+                        // Add checking for API rate limit
+                        if (companyData['Information'] != null) {
+                          print('API rate limit exceeded.');
+                        } else {
+                          price = stockData['Global Quote']['05. price'];
+                        }
+                      }
+
+                      if (symbol != '' && companyName != '' && price != '') {
+                        await _databaseService.insertStock(Stock(
+                            symbol: symbol, name: companyName, price: price));
+                      }
+
+                      _stockList = await _databaseService.getAllStocksFromDb();
+                      _stockList.forEach((stock) {
+                        print(stock);
+                      });
+
+                      setState(() {});
                     } catch (e) {
                       print('HomeView _inputStock catch: $e');
                     }

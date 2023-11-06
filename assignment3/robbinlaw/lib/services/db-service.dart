@@ -75,13 +75,17 @@ class SQFliteDbService {
 
   Future<void> insertStock(Stock stock) async {
     try {
-      //TODO: 
+      //TODO:
       //Put code here to insert a stock into the database.
-      //Insert the Stock into the correct table. 
-      //Also specify the conflictAlgorithm. 
+      //Insert the Stock into the correct table.
+      //Also specify the conflictAlgorithm.
       //In this case, if the same stock is inserted
       //multiple times, it replaces the previous data.
-      
+      await db.insert(
+        'stocks',
+        stock.toMap(),
+        conflictAlgorithm: sqflitePackage.ConflictAlgorithm.replace,
+      );
     } catch (e) {
       print('SQFliteDbService insertStock: $e');
     }
@@ -89,9 +93,14 @@ class SQFliteDbService {
 
   Future<void> updateStock(Stock stock) async {
     try {
-      //TODO: 
+      //TODO:
       //Put code here to update stock info.
-      
+      await db.update(
+        'stocks',
+        stock.toMap(),
+        where: "symbol = ?",
+        whereArgs: [stock.symbol],
+      );
     } catch (e) {
       print('SQFliteDbService updateStock: $e');
     }
@@ -99,9 +108,13 @@ class SQFliteDbService {
 
   Future<void> deleteStock(Stock stock) async {
     try {
-      //TODO: 
+      //TODO:
       //Put code here to delete a stock from the database.
-      
+      await db.delete(
+        'stocks',
+        where: "symbol = ?",
+        whereArgs: [stock.symbol],
+      );
     } catch (e) {
       print('SQFliteDbService deleteStock: $e');
     }
